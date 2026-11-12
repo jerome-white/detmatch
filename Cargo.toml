@@ -2,5 +2,10 @@
 name = "detmatch"
 version = "0.1.0"
 edition = "2024"
+description = "Match predicted and ground-truth object detection boxes, labelling each box TP, FP or FN"
+license = "MIT"
+repository = "https://github.com/jerome-white/detmatch"
+keywords = ["object-detection", "bounding-box", "iou", "evaluation", "computer-vision"]
+categories = ["computer-vision", "science", "command-line-utilities"]
 
 [dependencies]
