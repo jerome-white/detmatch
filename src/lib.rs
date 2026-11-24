@@ -19,8 +19,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let bbox = BBox::new(0.0, 0.0, 1.0, 1.0);
-        assert_eq!(bbox.xmin, 0.0);
+    fn equal_coordinates_are_equal_bboxes() {
+        let b1 = BBox::new(0.0, 0.0, 1.0, 1.0);
+        let b2 = BBox::new(b1.xmin, b1.ymin, b1.xmax, b1.ymax);
+        assert_eq!(b1, b2);
+    }
+
+    #[test]
+    fn swapped_coordinates_are_unequal_bboxes() {
+        let b1 = BBox::new(0.0, 0.0, 1.0, 1.0);
+        let b2 = BBox::new(b1.xmin, b1.xmax, b1.ymin, b1.ymax);
+        assert_ne!(b1, b2);
     }
 }
