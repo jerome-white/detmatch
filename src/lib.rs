@@ -73,7 +73,7 @@ mod tests {
 
     #[test]
     fn flat_box_has_zero_area() {
-        let bx = BBox::new(0.0, 0.0, 5.0, 0.0);
+        let bx = BBox::new(0.0, 0.0, 1.0, 0.0);
         assert_abs_diff_eq!(bx.area(), 0.0);
     }
 }
