@@ -27,7 +27,7 @@ impl BBox {
     }
 
     pub fn area(&self) -> Coord {
-        return self.height() * self.width();
+        return self.width() * self.height();
     }
 }
 
