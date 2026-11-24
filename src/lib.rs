@@ -1,5 +1,8 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+struct BBox {
+    xmin: f64,
+    xmax: f64,
+    ymin: f64,
+    ymax: f64,
 }
 
 #[cfg(test)]
@@ -8,7 +11,12 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+        let bbox = BBox {
+            xmin: 0.0,
+            xmax: 1.0,
+            ymin: 0.0,
+            ymax: 1.0,
+        };
+        assert_eq!(bbox.xmin, 0.0);
     }
 }
