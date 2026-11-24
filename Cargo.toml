@@ -9,3 +9,6 @@ keywords = ["object-detection", "bounding-box", "iou", "evaluation", "computer-v
 categories = ["computer-vision", "science", "command-line-utilities"]
 
 [dependencies]
+
+[lints.clippy]
+needless_return = "allow"
