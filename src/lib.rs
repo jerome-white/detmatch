@@ -101,7 +101,7 @@ mod tests {
 
     #[test]
     fn negative_coordinates_okay() {
-        let result = BBox::new(-1.0, 0.0, -1.0, 0.0);
+        let result = BBox::new(-5.0, -3.0, 2.0, 1.0);
         assert!(result.is_ok());
     }
 
