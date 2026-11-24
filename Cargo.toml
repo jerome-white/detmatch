@@ -12,3 +12,7 @@ categories = ["computer-vision", "science", "command-line-utilities"]
 
 [lints.clippy]
 needless_return = "allow"
+
+[dev-dependencies]
+approx = "0.5.1"
+approx-derive = "0.2.8"
