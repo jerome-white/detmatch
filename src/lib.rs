@@ -17,6 +17,18 @@ impl BBox {
             ymax,
         }
     }
+
+    pub fn width(&self) -> Coord {
+        return self.xmax - self.xmin;
+    }
+
+    pub fn height(&self) -> Coord {
+        return self.ymax - self.ymin;
+    }
+
+    pub fn area(&self) -> Coord {
+        return self.height() * self.width();
+    }
 }
 
 #[cfg(test)]
