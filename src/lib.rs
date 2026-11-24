@@ -3,7 +3,7 @@ pub type Coord = f64;
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum BBoxError {
     NonFiniteCoordinate,
-    InvalidCoordinateRange,
+    InvertedCoordinateRange,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -27,7 +27,7 @@ impl BBox {
                 return Err(BBoxError::NonFiniteCoordinate);
             }
             if max < min {
-                return Err(BBoxError::InvalidCoordinateRange);
+                return Err(BBoxError::InvertedCoordinateRange);
             }
         }
 
