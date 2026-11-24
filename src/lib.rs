@@ -1,7 +1,7 @@
-type Coord = f64;
+pub type Coord = f64;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-struct BBox {
+pub struct BBox {
     xmin: Coord,
     ymin: Coord,
     xmax: Coord,
@@ -9,7 +9,7 @@ struct BBox {
 }
 
 impl BBox {
-    fn new(xmin: Coord, ymin: Coord, xmax: Coord, ymax: Coord) -> Self {
+    pub fn new(xmin: Coord, ymin: Coord, xmax: Coord, ymax: Coord) -> Self {
         Self {
             xmin,
             ymin,
