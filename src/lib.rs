@@ -24,16 +24,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn equal_coordinates_are_equal_bboxes() {
-        let b1 = BBox::new(0.0, 0.0, 1.0, 1.0);
-        let b2 = BBox::new(b1.xmin, b1.ymin, b1.xmax, b1.ymax);
+    fn new_stores_coordinates_in_order() {
+        let b1 = BBox::new(1.0, 2.0, 3.0, 4.0);
+        let b2 = BBox {
+            xmin: 1.0,
+            ymin: 2.0,
+            xmax: 3.0,
+            ymax: 4.0,
+        };
         assert_eq!(b1, b2);
-    }
-
-    #[test]
-    fn swapped_coordinates_are_unequal_bboxes() {
-        let b1 = BBox::new(0.0, 0.0, 1.0, 1.0);
-        let b2 = BBox::new(b1.xmin, b1.xmax, b1.ymin, b1.ymax);
-        assert_ne!(b1, b2);
     }
 }
