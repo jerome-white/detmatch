@@ -70,8 +70,8 @@ mod tests {
     }
 
     #[test]
-    fn area_is_zero() {
-        let bx = BBox::new(0.0, 0.0, 0.0, 0.0);
+    fn flat_box_has_zero_area() {
+        let bx = BBox::new(0.0, 0.0, 5.0, 0.0);
         assert_eq!(bx.area(), 0.0);
     }
 }
