@@ -1,6 +1,12 @@
 pub type Coord = f64;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+pub enum BBoxError {
+    NonFiniteCoordinate,
+    InvalidCoordinateRange,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
 #[cfg_attr(test, derive(approx_derive::AbsDiffEq))]
 pub struct BBox {
     xmin: Coord,
@@ -10,13 +16,29 @@ pub struct BBox {
 }
 
 impl BBox {
-    pub fn new(xmin: Coord, ymin: Coord, xmax: Coord, ymax: Coord) -> Self {
-        Self {
+    pub fn new(
+        xmin: Coord,
+        ymin: Coord,
+        xmax: Coord,
+        ymax: Coord,
+    ) -> Result<Self, BBoxError> {
+        for (min, max) in [(xmin, xmax), (ymin, ymax)] {
+            if !min.is_finite() || !max.is_finite() {
+                return Err(BBoxError::NonFiniteCoordinate);
+            }
+            if max < min {
+                return Err(BBoxError::InvalidCoordinateRange);
+            }
+        }
+
+        let bbox = Self {
             xmin,
             ymin,
             xmax,
             ymax,
-        }
+        };
+
+        return Ok(bbox);
     }
 
     pub fn width(&self) -> Coord {
