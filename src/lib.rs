@@ -1,8 +1,10 @@
+type Coord = f64;
+
 struct BBox {
-    xmin: f64,
-    xmax: f64,
-    ymin: f64,
-    ymax: f64,
+    xmin: Coord,
+    xmax: Coord,
+    ymin: Coord,
+    ymax: Coord,
 }
 
 #[cfg(test)]
