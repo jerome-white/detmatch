@@ -46,4 +46,32 @@ mod tests {
         };
         assert_eq!(b1, b2);
     }
+
+    #[test]
+    fn width_is_xrange() {
+        let xmin = 0.0;
+        let xmax = 1.0;
+        let bx = BBox::new(xmin, 2.0, xmax, 4.0);
+        assert_eq!(bx.width(), xmax - xmin);
+    }
+
+    #[test]
+    fn height_is_yrange() {
+        let ymin = 0.0;
+        let ymax = 1.0;
+        let bx = BBox::new(1.0, ymin, 3.0, ymax);
+        assert_eq!(bx.height(), ymax - ymin);
+    }
+
+    #[test]
+    fn area_is_one() {
+        let bx = BBox::new(0.0, 0.0, 1.0, 1.0);
+        assert_eq!(bx.area(), 1.0);
+    }
+
+    #[test]
+    fn area_is_zero() {
+        let bx = BBox::new(0.0, 0.0, 0.0, 0.0);
+        assert_eq!(bx.area(), 0.0);
+    }
 }
