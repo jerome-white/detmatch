@@ -100,6 +100,12 @@ mod tests {
     }
 
     #[test]
+    fn negative_coordinates_okay() {
+        let result = BBox::new(-1.0, 0.0, -1.0, 0.0);
+        assert!(result.is_ok());
+    }
+
+    #[test]
     fn inverted_x_is_invalid() {
         let result = BBox::new(1.0, 0.0, 0.0, 0.0);
         assert_eq!(result, Err(BBoxError::InvertedCoordinateRange));
