@@ -1,5 +1,6 @@
 type Coord = f64;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct BBox {
     xmin: Coord,
     xmax: Coord,
