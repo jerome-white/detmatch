@@ -112,8 +112,14 @@ mod tests {
     }
 
     #[test]
+    fn coordinates_cannot_be_numeric() {
+        let result = BBox::new(Coord::NAN, 0.0, 0.0, 0.0);
+        assert_eq!(result, Err(BBoxError::NonFiniteCoordinate));
+    }
+
+    #[test]
     fn coordinates_must_be_finite() {
-        let result = BBox::new(Coord::NAN, 1.0, 0.0, 0.0);
+        let result = BBox::new(Coord::INFINITY, 0.0, 0.0, 0.0);
         assert_eq!(result, Err(BBoxError::NonFiniteCoordinate));
     }
 }
