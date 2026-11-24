@@ -64,9 +64,9 @@ mod tests {
     }
 
     #[test]
-    fn area_is_one() {
-        let bx = BBox::new(0.0, 0.0, 1.0, 1.0);
-        assert_eq!(bx.area(), 1.0);
+    fn area_is_width_times_height() {
+        let bx = BBox::new(1.0, 2.0, 3.0, 5.0);
+        assert_eq!(bx.area(), 6.0);
     }
 
     #[test]
