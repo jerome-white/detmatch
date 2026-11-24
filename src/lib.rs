@@ -98,4 +98,22 @@ mod tests {
         let bx = BBox::new(0.0, 0.0, 1.0, 0.0).unwrap();
         assert_abs_diff_eq!(bx.area(), 0.0);
     }
+
+    #[test]
+    fn inverted_x_is_invalid() {
+        let result = BBox::new(1.0, 0.0, 0.0, 0.0);
+        assert!(matches!(result, Err(BBoxError::InvertedCoordinateRange)));
+    }
+
+    #[test]
+    fn inverted_y_is_invalid() {
+        let result = BBox::new(0.0, 1.0, 0.0, 0.0);
+        assert!(matches!(result, Err(BBoxError::InvertedCoordinateRange)));
+    }
+
+    #[test]
+    fn coordinates_must_be_finite() {
+        let result = BBox::new(Coord::NAN, 1.0, 0.0, 0.0);
+        assert!(matches!(result, Err(BBoxError::NonFiniteCoordinate)))
+    }
 }
