@@ -10,7 +10,12 @@ struct BBox {
 
 impl BBox {
     fn new(xmin: Coord, ymin: Coord, xmax: Coord, ymax: Coord) -> Self {
-        Self { xmin, ymin, xmax, ymax }
+        Self {
+            xmin,
+            ymin,
+            xmax,
+            ymax,
+        }
     }
 }
 
