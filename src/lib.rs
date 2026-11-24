@@ -117,15 +117,23 @@ mod tests {
         assert_eq!(result, Err(BBoxError::InvertedCoordinateRange));
     }
 
+    fn coordinates_cannot_be(bad: Coord) {
+        let mut coords = [0.0; 4];
+        for i in 0..coords.len() {
+            coords[i] = bad;
+            let result = BBox::new(coords[0], coords[1], coords[2], coords[3]);
+            assert_eq!(result, Err(BBoxError::NonFiniteCoordinate));
+            coords[i] = 0.0
+        }
+    }
+
     #[test]
-    fn coordinates_cannot_be_numeric() {
-        let result = BBox::new(Coord::NAN, 0.0, 0.0, 0.0);
-        assert_eq!(result, Err(BBoxError::NonFiniteCoordinate));
+    fn coordinates_must_be_numeric() {
+        coordinates_cannot_be(Coord::NAN);
     }
 
     #[test]
     fn coordinates_must_be_finite() {
-        let result = BBox::new(Coord::INFINITY, 0.0, 0.0, 0.0);
-        assert_eq!(result, Err(BBoxError::NonFiniteCoordinate));
+        coordinates_cannot_be(Coord::INFINITY);
     }
 }
