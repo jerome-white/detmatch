@@ -202,6 +202,31 @@ mod tests {
         }
 
         #[test]
+        fn separated_on_x_only_is_none() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            let bx2 = BBox::new(2.0, 0.0, 3.0, 1.0).unwrap();
+            assert_intersection!(bx1, bx2, None);
+        }
+
+        #[test]
+        fn separated_on_y_only_is_none() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            let bx2 = BBox::new(0.0, 2.0, 1.0, 3.0).unwrap();
+            assert_intersection!(bx1, bx2, None);
+        }
+
+        #[test]
+        fn shared_horizontal_edge_is_flat() {
+            let bx0 = BBox::new(0.0, 1.0, 1.0, 1.0).unwrap(); // edge
+            let (ymin, ymax) = (bx0.ymin - 1.0, bx0.ymax + 1.0);
+
+            let bx1 = BBox::new(bx0.xmin, ymin, bx0.xmax, bx0.ymax).unwrap();
+            let bx2 = BBox::new(bx0.xmin, bx0.ymin, bx0.xmax, ymax).unwrap();
+
+            assert_intersection!(bx1, bx2, Some(bx0));
+        }
+
+        #[test]
         fn shared_edge_is_flat() {
             let bx0 = BBox::new(1.0, 0.0, 1.0, 1.0).unwrap(); // edge
             let (xmin, xmax) = (bx0.xmin - 1.0, bx0.xmax + 1.0);
