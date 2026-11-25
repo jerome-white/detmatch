@@ -63,6 +63,13 @@ impl BBox {
 
         return result.ok();
     }
+
+    pub fn iou(&self, other: &BBox) -> Option<BBox> {
+        intersection = self.intersection(other);
+        union = self.area() + other.area() - intersection;
+
+        return intersection / union;
+    }
 }
 
 #[cfg(test)]
