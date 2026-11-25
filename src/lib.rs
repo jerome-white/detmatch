@@ -64,11 +64,15 @@ impl BBox {
         return result.ok();
     }
 
-    pub fn iou(&self, other: &BBox) -> Option<BBox> {
-        intersection = self.intersection(other);
-        union = self.area() + other.area() - intersection;
-
-        return intersection / union;
+    pub fn iou(&self, other: &BBox) -> Coord {
+        return match self.intersection(other) {
+            None => 0.0,
+            Some(x) => {
+                let intersection = x.area();
+                let union = self.area() + other.area() - intersection;
+                intersection / union;
+            }
+        };
     }
 }
 
