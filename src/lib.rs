@@ -147,4 +147,37 @@ mod tests {
     fn coordinates_must_be_finite() {
         coordinates_cannot_be(Coord::INFINITY);
     }
+
+    #[test]
+    fn intersection_complete() {
+        let bx1 = BBox::new(0.0, 0.0, 3.0, 3.0).unwrap();
+        let bx2 = BBox::new(1.0, 1.0, 2.0, 2.0).unwrap();
+        assert_eq!(bx1.intersection(&bx2), Some(bx2));
+    }
+
+    #[test]
+    fn intersection_partial() {
+        let bx0 = BBox::new(1.0, 1.0, 2.0, 2.0).unwrap(); // expected
+        let (xmin, ymin) = (bx0.xmin - 1.0, bx0.ymin - 1.0);
+        let (xmax, ymax) = (bx0.xmax + 1.0, bx0.ymax + 1.0);
+
+        let bx1 = BBox::new(xmin, ymin, bx0.xmax, bx0.ymax).unwrap();
+        let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, ymax).unwrap();
+
+        assert_eq!(bx1.intersection(&bx2), Some(bx0));
+    }
+
+    #[test]
+    fn intersection_exact() {
+        let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+        let bx2 = bx1.clone();
+        assert_eq!(bx1.intersection(&bx2), Some(bx1));
+    }
+
+    #[test]
+    fn intersection_disjoint() {
+        let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+        let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
+        assert_eq!(bx1.intersection(&bx2), None);
+    }
 }
