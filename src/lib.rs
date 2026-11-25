@@ -68,137 +68,150 @@ impl BBox {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use approx::assert_abs_diff_eq;
 
-    #[test]
-    fn new_stores_coordinates_in_order() {
-        let b1 = BBox::new(1.0, 2.0, 3.0, 4.0).unwrap();
-        let b2 = BBox {
-            xmin: 1.0,
-            ymin: 2.0,
-            xmax: 3.0,
-            ymax: 4.0,
-        };
-        assert_eq!(b1, b2);
-    }
+    mod construction {
+        use super::*;
 
-    #[test]
-    fn width_is_xrange() {
-        let xmin = 0.0;
-        let xmax = 1.0;
-        let bx = BBox::new(xmin, 2.0, xmax, 4.0).unwrap();
-        assert_eq!(bx.width(), xmax - xmin);
-    }
+        #[test]
+        fn new_stores_coordinates_in_order() {
+            let b1 = BBox::new(1.0, 2.0, 3.0, 4.0).unwrap();
+            let b2 = BBox {
+                xmin: 1.0,
+                ymin: 2.0,
+                xmax: 3.0,
+                ymax: 4.0,
+            };
+            assert_eq!(b1, b2);
+        }
 
-    #[test]
-    fn height_is_yrange() {
-        let ymin = 0.0;
-        let ymax = 1.0;
-        let bx = BBox::new(1.0, ymin, 3.0, ymax).unwrap();
-        assert_eq!(bx.height(), ymax - ymin);
-    }
+        #[test]
+        fn negative_coordinates_okay() {
+            let result = BBox::new(-5.0, -3.0, 2.0, 1.0);
+            assert!(result.is_ok());
+        }
 
-    #[test]
-    fn area_is_width_times_height() {
-        let bx = BBox::new(1.0, 2.0, 3.0, 5.0).unwrap();
-        assert_abs_diff_eq!(bx.area(), 6.0);
-    }
+        #[test]
+        fn inverted_x_is_invalid() {
+            let result = BBox::new(1.0, 0.0, 0.0, 0.0);
+            assert_eq!(result, Err(BBoxError::InvertedCoordinateRange));
+        }
 
-    #[test]
-    fn flat_box_has_zero_area() {
-        let bx = BBox::new(0.0, 0.0, 1.0, 0.0).unwrap();
-        assert_abs_diff_eq!(bx.area(), 0.0);
-    }
+        #[test]
+        fn inverted_y_is_invalid() {
+            let result = BBox::new(0.0, 1.0, 0.0, 0.0);
+            assert_eq!(result, Err(BBoxError::InvertedCoordinateRange));
+        }
 
-    #[test]
-    fn negative_coordinates_okay() {
-        let result = BBox::new(-5.0, -3.0, 2.0, 1.0);
-        assert!(result.is_ok());
-    }
+        fn coordinates_cannot_be(bad: Coord) {
+            let mut coords = [0.0; 4];
+            for i in 0..coords.len() {
+                coords[i] = bad;
+                let result =
+                    BBox::new(coords[0], coords[1], coords[2], coords[3]);
+                assert_eq!(result, Err(BBoxError::NonFiniteCoordinate));
+                coords[i] = 0.0
+            }
+        }
 
-    #[test]
-    fn inverted_x_is_invalid() {
-        let result = BBox::new(1.0, 0.0, 0.0, 0.0);
-        assert_eq!(result, Err(BBoxError::InvertedCoordinateRange));
-    }
+        #[test]
+        fn coordinates_must_be_numeric() {
+            coordinates_cannot_be(Coord::NAN);
+        }
 
-    #[test]
-    fn inverted_y_is_invalid() {
-        let result = BBox::new(0.0, 1.0, 0.0, 0.0);
-        assert_eq!(result, Err(BBoxError::InvertedCoordinateRange));
-    }
-
-    fn coordinates_cannot_be(bad: Coord) {
-        let mut coords = [0.0; 4];
-        for i in 0..coords.len() {
-            coords[i] = bad;
-            let result = BBox::new(coords[0], coords[1], coords[2], coords[3]);
-            assert_eq!(result, Err(BBoxError::NonFiniteCoordinate));
-            coords[i] = 0.0
+        #[test]
+        fn coordinates_must_be_finite() {
+            coordinates_cannot_be(Coord::INFINITY);
         }
     }
 
-    #[test]
-    fn coordinates_must_be_numeric() {
-        coordinates_cannot_be(Coord::NAN);
+    mod size {
+        use super::*;
+        use approx::assert_abs_diff_eq;
+
+        #[test]
+        fn width_is_xrange() {
+            let xmin = 0.0;
+            let xmax = 1.0;
+            let bx = BBox::new(xmin, 2.0, xmax, 4.0).unwrap();
+            assert_eq!(bx.width(), xmax - xmin);
+        }
+
+        #[test]
+        fn height_is_yrange() {
+            let ymin = 0.0;
+            let ymax = 1.0;
+            let bx = BBox::new(1.0, ymin, 3.0, ymax).unwrap();
+            assert_eq!(bx.height(), ymax - ymin);
+        }
+
+        #[test]
+        fn area_is_width_times_height() {
+            let bx = BBox::new(1.0, 2.0, 3.0, 5.0).unwrap();
+            assert_abs_diff_eq!(bx.area(), 6.0);
+        }
+
+        #[test]
+        fn flat_box_has_zero_area() {
+            let bx = BBox::new(0.0, 0.0, 1.0, 0.0).unwrap();
+            assert_abs_diff_eq!(bx.area(), 0.0);
+        }
     }
 
-    #[test]
-    fn coordinates_must_be_finite() {
-        coordinates_cannot_be(Coord::INFINITY);
-    }
+    mod intersection {
+        use super::*;
 
-    #[test]
-    fn intersection_complete() {
-        let bx1 = BBox::new(0.0, 0.0, 3.0, 3.0).unwrap();
-        let bx2 = BBox::new(1.0, 1.0, 2.0, 2.0).unwrap();
-        assert_eq!(bx1.intersection(&bx2), Some(bx2));
-    }
+        #[test]
+        fn complete() {
+            let bx1 = BBox::new(0.0, 0.0, 3.0, 3.0).unwrap();
+            let bx2 = BBox::new(1.0, 1.0, 2.0, 2.0).unwrap();
+            assert_eq!(bx1.intersection(&bx2), Some(bx2));
+        }
 
-    #[test]
-    fn intersection_partial() {
-        let bx0 = BBox::new(1.0, 1.0, 2.0, 2.0).unwrap(); // expected
-        let (xmin, ymin) = (bx0.xmin - 1.0, bx0.ymin - 1.0);
-        let (xmax, ymax) = (bx0.xmax + 1.0, bx0.ymax + 1.0);
+        #[test]
+        fn partial() {
+            let bx0 = BBox::new(1.0, 1.0, 2.0, 2.0).unwrap(); // expected
+            let (xmin, ymin) = (bx0.xmin - 1.0, bx0.ymin - 1.0);
+            let (xmax, ymax) = (bx0.xmax + 1.0, bx0.ymax + 1.0);
 
-        let bx1 = BBox::new(xmin, ymin, bx0.xmax, bx0.ymax).unwrap();
-        let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, ymax).unwrap();
+            let bx1 = BBox::new(xmin, ymin, bx0.xmax, bx0.ymax).unwrap();
+            let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, ymax).unwrap();
 
-        assert_eq!(bx1.intersection(&bx2), Some(bx0));
-    }
+            assert_eq!(bx1.intersection(&bx2), Some(bx0));
+        }
 
-    #[test]
-    fn intersection_exact() {
-        let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
-        let bx2 = bx1.clone();
-        assert_eq!(bx1.intersection(&bx2), Some(bx1));
-    }
+        #[test]
+        fn exact() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            let bx2 = bx1.clone();
+            assert_eq!(bx1.intersection(&bx2), Some(bx1));
+        }
 
-    #[test]
-    fn intersection_disjoint() {
-        let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
-        let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
-        assert_eq!(bx1.intersection(&bx2), None);
-    }
+        #[test]
+        fn disjoint() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
+            assert_eq!(bx1.intersection(&bx2), None);
+        }
 
-    #[test]
-    fn intersection_shared_edge_is_flat() {
-        let bx0 = BBox::new(1.0, 0.0, 1.0, 1.0).unwrap(); // edge
-        let (xmin, xmax) = (bx0.xmin - 1.0, bx0.xmax + 1.0);
+        #[test]
+        fn shared_edge_is_flat() {
+            let bx0 = BBox::new(1.0, 0.0, 1.0, 1.0).unwrap(); // edge
+            let (xmin, xmax) = (bx0.xmin - 1.0, bx0.xmax + 1.0);
 
-        let bx1 = BBox::new(xmin, bx0.ymin, bx0.xmax, bx0.ymax).unwrap();
-        let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, bx0.ymax).unwrap();
+            let bx1 = BBox::new(xmin, bx0.ymin, bx0.xmax, bx0.ymax).unwrap();
+            let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, bx0.ymax).unwrap();
 
-        assert_eq!(bx1.intersection(&bx2), Some(bx0));
-    }
+            assert_eq!(bx1.intersection(&bx2), Some(bx0));
+        }
 
-    #[test]
-    fn intersection_shared_corner_is_point() {
-        let bx0 = BBox::new(1.0, 1.0, 1.0, 1.0).unwrap(); // corner
+        #[test]
+        fn shared_corner_is_point() {
+            let bx0 = BBox::new(1.0, 1.0, 1.0, 1.0).unwrap(); // corner
 
-        let bx1 = BBox::new(0.0, 0.0, bx0.xmax, bx0.ymax).unwrap();
-        let bx2 = BBox::new(bx0.xmin, bx0.ymin, 2.0, 2.0).unwrap();
+            let bx1 = BBox::new(0.0, 0.0, bx0.xmax, bx0.ymax).unwrap();
+            let bx2 = BBox::new(bx0.xmin, bx0.ymin, 2.0, 2.0).unwrap();
 
-        assert_eq!(bx1.intersection(&bx2), Some(bx0));
+            assert_eq!(bx1.intersection(&bx2), Some(bx0));
+        }
     }
 }
