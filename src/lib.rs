@@ -166,7 +166,7 @@ mod tests {
                     let source = l.intersection(r);
                     assert_eq!(source, $target, "{:?} ^ {:?}", l, r);
                 }
-            }
+            };
         }
 
         #[test]
