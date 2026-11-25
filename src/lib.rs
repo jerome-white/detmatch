@@ -160,11 +160,20 @@ mod tests {
     mod intersection {
         use super::*;
 
+        macro_rules! assert_intersection {
+            ($lhs:expr, $rhs:expr, $target:expr) => {
+                for (l, r) in [(&$lhs, &$rhs), (&$rhs, &$lhs)] {
+                    let source = l.intersection(r);
+                    assert_eq!(source, $target, "{:?} ^ {:?}", l, r);
+                }
+            }
+        }
+
         #[test]
         fn complete() {
             let bx1 = BBox::new(0.0, 0.0, 3.0, 3.0).unwrap();
             let bx2 = BBox::new(1.0, 1.0, 2.0, 2.0).unwrap();
-            assert_eq!(bx1.intersection(&bx2), Some(bx2));
+            assert_intersection!(bx1, bx2, Some(bx2));
         }
 
         #[test]
@@ -176,21 +185,20 @@ mod tests {
             let bx1 = BBox::new(xmin, ymin, bx0.xmax, bx0.ymax).unwrap();
             let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, ymax).unwrap();
 
-            assert_eq!(bx1.intersection(&bx2), Some(bx0));
+            assert_intersection!(bx1, bx2, Some(bx0));
         }
 
         #[test]
         fn exact() {
             let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
-            let bx2 = bx1.clone();
-            assert_eq!(bx1.intersection(&bx2), Some(bx1));
+            assert_intersection!(bx1, bx1, Some(bx1));
         }
 
         #[test]
         fn disjoint() {
             let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
             let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
-            assert_eq!(bx1.intersection(&bx2), None);
+            assert_intersection!(bx1, bx2, None);
         }
 
         #[test]
@@ -201,7 +209,7 @@ mod tests {
             let bx1 = BBox::new(xmin, bx0.ymin, bx0.xmax, bx0.ymax).unwrap();
             let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, bx0.ymax).unwrap();
 
-            assert_eq!(bx1.intersection(&bx2), Some(bx0));
+            assert_intersection!(bx1, bx2, Some(bx0));
         }
 
         #[test]
@@ -211,7 +219,7 @@ mod tests {
             let bx1 = BBox::new(0.0, 0.0, bx0.xmax, bx0.ymax).unwrap();
             let bx2 = BBox::new(bx0.xmin, bx0.ymin, 2.0, 2.0).unwrap();
 
-            assert_eq!(bx1.intersection(&bx2), Some(bx0));
+            assert_intersection!(bx1, bx2, Some(bx0));
         }
     }
 }
