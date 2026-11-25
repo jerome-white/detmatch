@@ -52,6 +52,17 @@ impl BBox {
     pub fn area(&self) -> Coord {
         return self.width() * self.height();
     }
+
+    pub fn intersection(&self, other: &BBox) -> Option<BBox> {
+        let xmin = self.xmin.max(other.xmin);
+        let ymin = self.ymin.max(other.ymin);
+        let xmax = self.xmax.min(other.xmax);
+        let ymax = self.ymax.min(other.ymax);
+
+        let result = BBox::new(xmin, ymin, xmax, ymax);
+
+        return result.ok();
+    }
 }
 
 #[cfg(test)]
