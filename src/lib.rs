@@ -180,4 +180,25 @@ mod tests {
         let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
         assert_eq!(bx1.intersection(&bx2), None);
     }
+
+    #[test]
+    fn intersection_shared_edge_is_flat() {
+        let bx0 = BBox::new(1.0, 0.0, 1.0, 1.0).unwrap(); // edge
+        let (xmin, xmax) = (bx0.xmin - 1.0, bx0.xmax + 1.0);
+
+        let bx1 = BBox::new(xmin, bx0.ymin, bx0.xmax, bx0.ymax).unwrap();
+        let bx2 = BBox::new(bx0.xmin, bx0.ymin, xmax, bx0.ymax).unwrap();
+
+        assert_eq!(bx1.intersection(&bx2), Some(bx0));
+    }
+
+    #[test]
+    fn intersection_shared_corner_is_point() {
+        let bx0 = BBox::new(1.0, 1.0, 1.0, 1.0).unwrap(); // corner
+
+        let bx1 = BBox::new(0.0, 0.0, bx0.xmax, bx0.ymax).unwrap();
+        let bx2 = BBox::new(bx0.xmin, bx0.ymin, 2.0, 2.0).unwrap();
+
+        assert_eq!(bx1.intersection(&bx2), Some(bx0));
+    }
 }
