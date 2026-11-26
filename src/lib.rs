@@ -70,7 +70,10 @@ impl BBox {
             Some(x) => {
                 let intersection = x.area();
                 let union = self.area() + other.area() - intersection;
-                intersection / union
+                match union {
+                    0.0 => 0.0,
+                    _ => intersection / union,
+                }
             }
         };
     }
@@ -317,8 +320,7 @@ mod tests {
         #[test]
         fn zero_area_overlap_is_zero() {
             let bx1 = BBox::new(0.0, 0.0, 0.0, 0.0).unwrap();
-            let iou = bx1.iou(&bx1);
-            assert!(iou.is_nan());
+            assert_iou!(bx1, bx1, 0.0);
         }
     }
 }
