@@ -267,5 +267,12 @@ mod tests {
             let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
             assert_eq!(bx1.iou(&bx1), 1.0);
         }
+
+        #[test]
+        fn disjoint_boxes_are_zero() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
+            assert_eq!(bx1.iou(&bx2), 0.0);
+        }
     }
 }
