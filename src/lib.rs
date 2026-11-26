@@ -262,17 +262,26 @@ mod tests {
     mod iou {
         use super::*;
 
+        macro_rules! assert_iou {
+            ($lhs:expr, $rhs:expr, $target:expr) => {
+                for (l, r) in [(&$lhs, &$rhs), (&$rhs, &$lhs)] {
+                    let source = l.iou(r);
+                    assert_eq!(source, $target, "iou({:?}, {:?})", l, r);
+                }
+            };
+        }
+
         #[test]
         fn identical_boxes_are_one() {
             let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
-            assert_eq!(bx1.iou(&bx1), 1.0);
+            assert_iou!(bx1, bx1, 1.0);
         }
 
         #[test]
         fn disjoint_boxes_are_zero() {
             let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
             let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
-            assert_eq!(bx1.iou(&bx2), 0.0);
+            assert_iou!(bx1, bx2, 0.0);
         }
 
         #[test]
@@ -280,14 +289,14 @@ mod tests {
             let x_edge = 1.0;
             let bx1 = BBox::new(0.0, 0.0, x_edge, 1.0).unwrap();
             let bx2 = BBox::new(x_edge, 0.0, 2.0, 1.0).unwrap();
-            assert_eq!(bx1.iou(&bx2), 0.0);
+            assert_iou!(bx1, bx2, 0.0);
         }
 
         #[test]
         fn unit_overlap_boxes_are_one() {
             let bx1 = BBox::new(0.0, 0.0, 2.0, 2.0).unwrap();
             let bx2 = BBox::new(1.0, 0.0, 2.0, 2.0).unwrap();
-            assert_eq!(bx1.iou(&bx2), 0.5);
+            assert_iou!(bx1, bx2, 0.5);
         }
     }
 }
