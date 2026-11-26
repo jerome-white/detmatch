@@ -63,11 +63,33 @@ impl BBox {
 
         return result.ok();
     }
+
+    pub fn iou(&self, other: &BBox) -> Coord {
+        return match self.intersection(other) {
+            None => 0.0,
+            Some(x) => {
+                let intersection = x.area();
+                let union = self.area() + other.area() - intersection;
+                match union {
+                    0.0 => 0.0,
+                    _ => intersection / union,
+                }
+            }
+        };
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    macro_rules! assert_sym_op {
+        ($op:ident, $lhs:expr, $rhs:expr, $target:expr, $fmt:literal) => {
+            for (l, r) in [(&$lhs, &$rhs), (&$rhs, &$lhs)] {
+                assert_eq!(l.$op(r), $target, $fmt, l, r);
+            }
+        };
+    }
 
     mod construction {
         use super::*;
@@ -162,10 +184,13 @@ mod tests {
 
         macro_rules! assert_intersection {
             ($lhs:expr, $rhs:expr, $target:expr) => {
-                for (l, r) in [(&$lhs, &$rhs), (&$rhs, &$lhs)] {
-                    let source = l.intersection(r);
-                    assert_eq!(source, $target, "{:?} ^ {:?}", l, r);
-                }
+                assert_sym_op!(
+                    intersection,
+                    $lhs,
+                    $rhs,
+                    $target,
+                    "{:?} ^ {:?}"
+                );
             };
         }
 
@@ -245,6 +270,57 @@ mod tests {
             let bx2 = BBox::new(bx0.xmin, bx0.ymin, 2.0, 2.0).unwrap();
 
             assert_intersection!(bx1, bx2, Some(bx0));
+        }
+    }
+
+    mod iou {
+        use super::*;
+
+        macro_rules! assert_iou {
+            ($lhs:expr, $rhs:expr, $target:expr) => {
+                assert_sym_op!(iou, $lhs, $rhs, $target, "iou({:?}, {:?})");
+            };
+        }
+
+        #[test]
+        fn identical_boxes_are_one() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            assert_iou!(bx1, bx1, 1.0);
+        }
+
+        #[test]
+        fn disjoint_boxes_are_zero() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            let bx2 = BBox::new(2.0, 2.0, 3.0, 3.0).unwrap();
+            assert_iou!(bx1, bx2, 0.0);
+        }
+
+        #[test]
+        fn edge_touching_boxes_are_zero() {
+            let x_edge = 1.0;
+            let bx1 = BBox::new(0.0, 0.0, x_edge, 1.0).unwrap();
+            let bx2 = BBox::new(x_edge, 0.0, 2.0, 1.0).unwrap();
+            assert_iou!(bx1, bx2, 0.0);
+        }
+
+        #[test]
+        fn nested_box_covering_half_is_one_half() {
+            let bx1 = BBox::new(0.0, 0.0, 2.0, 2.0).unwrap();
+            let bx2 = BBox::new(1.0, 0.0, 2.0, 2.0).unwrap();
+            assert_iou!(bx1, bx2, 0.5);
+        }
+
+        #[test]
+        fn corner_overlap_boxes_are_one_seventh() {
+            let bx1 = BBox::new(0.0, 0.0, 2.0, 2.0).unwrap();
+            let bx2 = BBox::new(1.0, 1.0, 3.0, 3.0).unwrap();
+            assert_iou!(bx1, bx2, 1.0 / 7.0);
+        }
+
+        #[test]
+        fn zero_area_overlap_is_zero() {
+            let bx1 = BBox::new(0.0, 0.0, 0.0, 0.0).unwrap();
+            assert_iou!(bx1, bx1, 0.0);
         }
     }
 }
