@@ -282,5 +282,12 @@ mod tests {
             let bx2 = BBox::new(x_edge, 0.0, 2.0, 1.0).unwrap();
             assert_eq!(bx1.iou(&bx2), 0.0);
         }
+
+        #[test]
+        fn unit_overlap_boxes_are_one() {
+            let bx1 = BBox::new(0.0, 0.0, 2.0, 2.0).unwrap();
+            let bx2 = BBox::new(1.0, 0.0, 2.0, 2.0).unwrap();
+            assert_eq!(bx1.iou(&bx2), 0.5);
+        }
     }
 }
