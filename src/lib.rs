@@ -258,4 +258,14 @@ mod tests {
             assert_intersection!(bx1, bx2, Some(bx0));
         }
     }
+
+    mod iou {
+        use super::*;
+
+        #[test]
+        fn identical_boxes_are_one() {
+            let bx1 = BBox::new(0.0, 0.0, 1.0, 1.0).unwrap();
+            assert_eq!(bx1.iou(&bx1), 1.0);
+        }
+    }
 }
