@@ -70,7 +70,7 @@ impl BBox {
             Some(x) => {
                 let intersection = x.area();
                 let union = self.area() + other.area() - intersection;
-                intersection / union;
+                intersection / union
             }
         };
     }
