@@ -313,5 +313,12 @@ mod tests {
             let bx2 = BBox::new(1.0, 1.0, 3.0, 3.0).unwrap();
             assert_iou!(bx1, bx2, 1.0 / 7.0);
         }
+
+        #[test]
+        fn zero_area_overlap_is_zero() {
+            let bx1 = BBox::new(0.0, 0.0, 0.0, 0.0).unwrap();
+            let iou = bx1.iou(&bx1);
+            assert!(iou.is_nan());
+        }
     }
 }
