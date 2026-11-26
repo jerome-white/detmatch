@@ -80,6 +80,14 @@ impl BBox {
 mod tests {
     use super::*;
 
+    macro_rules! assert_sym_op {
+        ($op:ident, $lhs:expr, $rhs:expr, $target:expr, $fmt:literal) => {
+            for (l, r) in [(&$lhs, &$rhs), (&$rhs, &$lhs)] {
+                assert_eq!(l.$op(r), $target, $fmt, l, r);
+            }
+        };
+    }
+
     mod construction {
         use super::*;
 
@@ -173,10 +181,13 @@ mod tests {
 
         macro_rules! assert_intersection {
             ($lhs:expr, $rhs:expr, $target:expr) => {
-                for (l, r) in [(&$lhs, &$rhs), (&$rhs, &$lhs)] {
-                    let source = l.intersection(r);
-                    assert_eq!(source, $target, "{:?} ^ {:?}", l, r);
-                }
+                assert_sym_op!(
+                    intersection,
+                    $lhs,
+                    $rhs,
+                    $target,
+                    "{:?} ^ {:?}"
+                );
             };
         }
 
@@ -264,10 +275,7 @@ mod tests {
 
         macro_rules! assert_iou {
             ($lhs:expr, $rhs:expr, $target:expr) => {
-                for (l, r) in [(&$lhs, &$rhs), (&$rhs, &$lhs)] {
-                    let source = l.iou(r);
-                    assert_eq!(source, $target, "iou({:?}, {:?})", l, r);
-                }
+                assert_sym_op!(iou, $lhs, $rhs, $target, "iou({:?}, {:?})");
             };
         }
 
