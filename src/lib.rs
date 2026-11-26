@@ -293,7 +293,7 @@ mod tests {
         }
 
         #[test]
-        fn unit_overlap_boxes_are_one() {
+        fn nested_box_covering_half_is_one_half() {
             let bx1 = BBox::new(0.0, 0.0, 2.0, 2.0).unwrap();
             let bx2 = BBox::new(1.0, 0.0, 2.0, 2.0).unwrap();
             assert_iou!(bx1, bx2, 0.5);
