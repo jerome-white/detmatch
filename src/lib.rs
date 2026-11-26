@@ -298,5 +298,12 @@ mod tests {
             let bx2 = BBox::new(1.0, 0.0, 2.0, 2.0).unwrap();
             assert_iou!(bx1, bx2, 0.5);
         }
+
+        #[test]
+        fn corner_overlap_boxes_are_one_seventh() {
+            let bx1 = BBox::new(0.0, 0.0, 2.0, 2.0).unwrap();
+            let bx2 = BBox::new(1.0, 1.0, 3.0, 3.0).unwrap();
+            assert_iou!(bx1, bx2, 1.0 / 7.0);
+        }
     }
 }
